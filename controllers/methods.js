@@ -95,8 +95,6 @@ module.exports = api => {
         api.makeResponse.fail(res, 400, 'Invalid sender address', 'Require "Address" in request header');
         return;
       }
-
-      console.log(api.web3.eth.accounts.privateKeyToAccount('0x0e429188f29cd39c262eaac95a03f6bb6c4dea91091377c98073443ccfabea91'));
   
       const abi = method.encodeABI();
       const gas = await method.estimateGas({from: req.get('Address')});
