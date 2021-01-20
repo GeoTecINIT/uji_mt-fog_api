@@ -1,10 +1,8 @@
-const Web3 = require('web3');
+const createWeb3Instance = require('./utils/web3');
 const Common = require('ethereumjs-common');
 
 module.exports = async(api) => {
-  api.web3 = new Web3(
-    `http://${api.apiConfig.blockchainNetwork.config.host}:${api.apiConfig.blockchainNetwork.config.port}`
-  );
+  api.web3 = createWeb3Instance(api.apiConfig.blockchainNetwork.config);
   
   api.chainID = api.apiConfig.blockchainNetwork.genesis.config.chainId;
   api.networkID = api.apiConfig.blockchainNetwork.config.network_id;
