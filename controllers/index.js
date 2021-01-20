@@ -6,7 +6,8 @@ const registrables = [
   './networkControllers',
   './regionControllers',
   './transactionControllers',
-  './utilsControllers'
+  './utilsControllers',
+  './otherControllers',
 ];
 
 module.exports = api => {
