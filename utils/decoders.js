@@ -1,6 +1,8 @@
 module.exports = web3 => {
   decoders = {};
 
+  decoders.cellID = cellID => '0x' + parseInt(cellID).toString(16).padStart(16, '0');
+
   decoders.ipv4 = str => parseInt(str).toString(16).padStart(8, '0').match(/.{1,2}/g)
     .map(x => parseInt(x, 16).toString(10)).join('.');
 
@@ -20,15 +22,15 @@ module.exports = web3 => {
 
   decoders.region = region => ({
     metadata: decoders.regionMetadata(region['metadata']),
-    cellIDs: region['cellIDs'].map(c => utils.toCellID(c)),
-    failedCellIDs: region['failedCellIDs'].map(c => utils.toCellID(c))
+    cellIDs: region['cellIDs'].map(c => decoders.cellID(c)),
+    failedCellIDs: region['failedCellIDs'].map(c => decoders.cellID(c))
   });
 
   decoders.device = device => ({
     addr: device['addr'],
     services: device['services'].map(s => decoders.serviceName(s)),
     lastUpdatedEpoch: new Date(device['lastUpdatedEpoch']),
-    location: utils.toCellID(device['location']),
+    location: decoders.cellID(device['location']),
     ipv4: decoders.ipv4(device['ipv4']),
     ipv6: decoders.ipv6(device['ipv6']),
     active: device['active']

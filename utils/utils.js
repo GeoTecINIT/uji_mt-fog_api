@@ -1,11 +1,11 @@
 module.exports = () => {
   utils = {};
 
-  utils.toCellID = str => {
+  utils.toFullCellID = str => {
     if (str.startsWith('0x')) {
       return str.padEnd(18, '0');
     }
-    return '0x' + parseInt(str).toString(16).padEnd(18, '0');
+    return '0x' + parseInt(str).toString(16).padEnd(16, '0');
   };
 
   utils.hexToBytes = hexString => {

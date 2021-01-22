@@ -18,7 +18,7 @@ module.exports = api => {
   api.get('/region/query/:cellID', async(req, res) => {
     try {
 
-      let cellID = api.utils.toCellID(req.params.cellID);
+      let cellID = api.utils.toFullCellID(req.params.cellID);
 
       if (!cellID) {
         api.makeResponse.fail(res, 400, `Cell ID ${cellID} ?`);
