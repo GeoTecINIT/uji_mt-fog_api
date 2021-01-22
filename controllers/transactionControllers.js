@@ -65,24 +65,14 @@ module.exports = api => {
         v: api.utils.hexToBuffer(req.body.v)
       }, {common: api.common});
 
-      console.log(api.utils.bufferToHex(tx.r));
-      console.log(api.utils.bufferToHex(tx.s));
-      console.log(api.utils.bufferToHex(tx.v));
-
-      console.log('addr:' + api.utils.bufferToHex(tx.getSenderAddress()));
-      console.log('pubk:' + api.utils.bufferToHex(tx.getSenderPublicKey()));
       if (!tx.verifySignature()) {
         api.makeResponse.fail(res, 401, 'Signature invalid');
         return;
       }
 
-      // api.makeResponse.fail(res, 500, 'Not implmented');
-
       const rawTransaction = '0x' + tx.serialize().toString('hex');
       const method = () => api.web3.eth.sendSignedTransaction(rawTransaction);
       api.sendTransaction(res, req, method, false);
-
-      delete api.unsignedTransactions[req.body.tx];
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
     }
