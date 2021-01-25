@@ -27,15 +27,20 @@ module.exports = api => {
     }
 
     try {
-      const cellIDs = req.body.cellIDs.map(hex => {
-        return hex.substr(2).match(/.{1,2}/g).map(x => parseInt(x, 16).toString(2).padStart(8, '0')).join('')
-          .match(/.{1,6}/g).map(b64 => base64.encoders[parseInt(b64.padEnd(6, '0'), 2)]).join('');
-      });
-
+      const cellIDs = req.body.cellIDs
+        .map(hex => {
+          return api.utils.toFullCellID(hex)
+            .substr(2).match(/.{1,2}/g)
+            .map(x => parseInt(x, 16).toString(2).padStart(8, '0')).join('')
+            .replace(/0+$/g, '')
+            .match(/.{1,6}/g)
+            .map(bin => base64.encoders[parseInt(bin.padEnd(6, '0'), 2)]).join('');
+        });
+      
       const tree = s2base64tree.makeTree(cellIDs);
       const encoded = s2base64tree.encoder.encode(tree);
       const chunks = s2base64tree.chunk(encoded, 128);
-
+      
       api.makeResponse.success(res, chunks.map(chunk => api.utils.bytesToHex(chunk)));
     } catch (err) {
       api.makeResponse.fail(res, 500, 'ERROR', err);

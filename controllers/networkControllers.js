@@ -1,6 +1,14 @@
 const readConfig = require('../utils/config');
 
 module.exports = api => {
+  api.get('/network/eth-account', (req, res) => {
+    try {
+      api.makeResponse.success(res, api.apiConfig.blockchainNetwork.config.address);
+    } catch (error) {
+      api.makeResponse.fail(res, 500, 'ERROR', error);
+    }
+  });
+
   api.get('/network/default-config', (req, res) => {
     try {
       const config = readConfig();

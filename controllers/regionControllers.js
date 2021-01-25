@@ -85,7 +85,7 @@ module.exports = api => {
         return;
       }
 
-      const method = api.contracts.regions.methods.addRegionCells(req.body.id, req.body.cellIDs);
+      const method = api.contracts.regions.methods.addRegionCells(req.body.id, req.body.cellIDs.map(c => api.utils.toFullCellID(c)));
       api.sendContractTransaction(res, req, method);
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
