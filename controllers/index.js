@@ -5,6 +5,8 @@ const registrables = [
   './miningControllers',
   './networkControllers',
   './regionControllers',
+  './reputationControllers',
+  './serviceControllers',
   './transactionControllers',
   './utilsControllers',
   './otherControllers',

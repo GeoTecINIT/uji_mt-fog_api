@@ -21,6 +21,7 @@ api.use(express.json());
 
 api.apiConfig = readConfig();
 api.unsignedTransactions = {};
+api.feedbacks = [];
 
 registerBlockchainNetwork(api);
 registerContracts(api);
