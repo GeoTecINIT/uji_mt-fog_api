@@ -33,7 +33,19 @@ module.exports = web3 => {
     location: decoders.cellID(device['location']),
     ipv4: decoders.ipv4(device['ipv4']),
     ipv6: decoders.ipv6(device['ipv6']),
+    regionID: device['regionID'],
     active: device['active']
+  });
+
+  decoders.deviceReputation = deviceReputation => ({
+    ...decoders.device(deviceReputation['device']),
+    reputation: deviceReputation['value'] / 0xffffffffffffffff
+  });
+
+  decoders.reputation = reputation => ({
+    value: reputation['value'],
+    timestamp: new Date(reputation['timestamp'] * 1000),
+    records: reputation['records'].map((v, i) => ({timestamp: reputation['timestamps'][i], value: v}))
   });
 
   return decoders;

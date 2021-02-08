@@ -50,8 +50,11 @@ module.exports = api => {
 
       console.log(`Random quality: ${quality}`);
 
+      const device = api.decoders.device(await api.contracts.devices.methods.getDeviceFromAddress(address).call());
+
       api.feedbacks.push({
         device: address,
+        regionID: device.regionID,
         service: req.body.service,
         token: req.body.token,
         quality: quality,
