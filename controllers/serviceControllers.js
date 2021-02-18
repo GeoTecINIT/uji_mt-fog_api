@@ -39,7 +39,7 @@ module.exports = api => {
     }
   });
 
-  api.post('/service/close', (req, res) => {
+  api.post('/service/close', async(req, res) => {
     try {
       if (!api.checkRequestBody(res, req.body, ['service', 'token'])) {
         return;
