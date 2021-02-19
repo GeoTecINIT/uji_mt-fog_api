@@ -39,13 +39,13 @@ module.exports = web3 => {
 
   decoders.deviceReputation = deviceReputation => ({
     ...decoders.device(deviceReputation['device']),
-    reputation: deviceReputation['value'] / 0xffffffffffffffff
+    reputation: deviceReputation['reputation'] / 0xffffffffffffffff
   });
 
   decoders.reputation = reputation => ({
-    value: reputation['value'],
+    value: reputation['value'] / 0xffffffffffffffff,
     timestamp: new Date(reputation['timestamp'] * 1000),
-    records: reputation['records'].map((v, i) => ({timestamp: reputation['timestamps'][i], value: v}))
+    records: reputation['records'].map((v, i) => ({timestamp: new Date(reputation['timestamps'][i] * 1000), value: v / 0xffffffffffffffff}))
   });
 
   return decoders;

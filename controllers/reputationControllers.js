@@ -4,7 +4,7 @@ module.exports = api => {
       const service = api.encoders.serviceName(req.params.serviceName);
       const reputation = await api.contracts.reputationManagement.methods.getReputationValue(req.params.deviceAddr, service).call();
 
-      api.makeResponse.success(res, {reputation: reputation});
+      api.makeResponse.success(res, {reputation: reputation / 0xffffffffffffffff});
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
     }
@@ -15,7 +15,7 @@ module.exports = api => {
       const service = api.encoders.serviceName(req.params.serviceName);
       const reputation = await api.contracts.reputationManagement.methods.getReputationValue(req.params.regionID, req.params.deviceAddr, service).call();
 
-      api.makeResponse.success(res, {reputation: reputation});
+      api.makeResponse.success(res, {reputation: reputation / 0xffffffffffffffff});
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
     }
@@ -24,9 +24,9 @@ module.exports = api => {
   api.get('/reputation/get/records/:deviceAddr/:serviceName', async(req, res) => {
     try {
       const service = api.encoders.serviceName(req.params.serviceName);
-      const reputation = api.decoders.reputation(await api.contracts.reputationManagement.methods.getReputationData(req.params.deviceAddr, service).call());
+      const reputationRecords = api.decoders.reputation(await api.contracts.reputationManagement.methods.getReputationData(req.params.deviceAddr, service).call());
 
-      api.makeResponse.success(res, reputation);
+      api.makeResponse.success(res, reputationRecords);
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
     }
@@ -35,9 +35,9 @@ module.exports = api => {
   api.get('/reputation/get/records/:deviceAddr/:serviceName/in/:regionID', async(req, res) => {
     try {
       const service = api.encoders.serviceName(req.params.serviceName);
-      const reputation = api.decoders.reputation(await api.contracts.reputationManagement.methods.getReputationData(req.params.regionID, req.params.deviceAddr, service).call());
+      const reputationRecords = api.decoders.reputation(await api.contracts.reputationManagement.methods.getReputationData(req.params.regionID, req.params.deviceAddr, service).call());
 
-      api.makeResponse.success(res, reputation);
+      api.makeResponse.success(res, reputationRecords);
     } catch (error) {
       api.makeResponse.fail(res, 500, 'ERROR', error);
     }
@@ -81,9 +81,17 @@ module.exports = api => {
 
       const promises = api.feedbacks.filter(f => !f.sent).map(feedback => new Promise((resolve, reject) => {
         try {
-          const value = Math.round((feedback.consumerFeedback === null ? feedback.quality : (feedback.quality + feedback.consumerFeedback) / 2) * 0xffffffffffffffff);
+          let value = feedback.quality;
+          if (feedback.consumerFeedback !== null) {
+            value += feedback.consumerFeedback;
+            value /= 2;
+          }
+          console.log(value);
+          value *= 0xffffffffffffffff;
+          value = Math.min(value, 0xffffffffffffffff);
+          value = Math.max(value, 0);
           const service = api.encoders.serviceName(feedback.service);
-          api.updateReputation(feedback.regionID, feedback.device, service, value).send({from: fromAddr})
+          api.contracts.reputationManagement.methods.updateReputation(feedback.regionID, feedback.device, service, value.toString()).send({from: fromAddr})
             .on('transactionHash', hash => {
               feedback.sent = true;
               hashes.push(hash);
